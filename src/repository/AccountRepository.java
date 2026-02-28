@@ -19,4 +19,13 @@ public class AccountRepository {
     public Optional<Account> findByNumber(String accountNumber) {
         return  Optinal.ofNullable(accountsByNumber.get(accountNumber)) ; //didn't use normal "of" -> coz this will handle null too .
     }
+
+    public List<Account> findByCustomerId(String customerId ) {
+        List<Account> result = new ArrayList<>();
+        for (Account a : accountsByNumber.values()){
+            if (a.getCustomerId().equals(customerId))
+                result.add(a);
+        }
+        return result;
+    }
 }
