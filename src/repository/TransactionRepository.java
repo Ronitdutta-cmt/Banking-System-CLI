@@ -1,19 +1,75 @@
 package repository;
 
+import database.DBConnection;
 import domain.Transanction;
+import domain.Type;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TransactionRepository {
-    private  final Map<String , List<Transanction>> txByAccount = new HashMap<>() ;  // (transactionId , list of transactions ) .
 
-    public void add(Transanction transanction){
-        // 1st para -> agr present h , ishke corresponding transaction will be returned > jaisi hi transaction return ho rha h,  we are adding a new txn to it.
-        txByAccount.computeIfAbsent(transanction.getAccountNumber() , k-> new ArrayList<>() ) .add(transanction) ;
+    public void add(Transanction transaction) {
+
+        String sql =
+                "INSERT INTO transactions(id, type, account_number, amount, timestamp, note) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, transaction.getId());
+            ps.setString(2, transaction.getType().name());
+            ps.setString(3, transaction.getAccountNumber());
+            ps.setDouble(4, transaction.getAmount());
+
+            ps.setTimestamp(
+                    5,
+                    Timestamp.valueOf(transaction.getTimestamp())
+            );
+
+            ps.setString(6, transaction.getNote());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    public List<Transanction> findByAccount(String account){
-            return  new ArrayList<>(txByAccount.getOrDefault(account ,  Collections.emptyList() )) ;
+    public List<Transanction> findByAccount(String account) {
+
+        List<Transanction> transactions = new ArrayList<>();
+
+        String sql =
+                "SELECT * FROM transactions WHERE account_number = ? ORDER BY timestamp";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, account);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                transactions.add(
+                        new Transanction(
+                                rs.getString("id"),
+                                Type.valueOf(rs.getString("type")),
+                                rs.getString("account_number"),
+                                rs.getDouble("amount"),
+                                rs.getTimestamp("timestamp").toLocalDateTime(),
+                                rs.getString("note")
+                        )
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return transactions;
     }
 }
