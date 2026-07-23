@@ -64,7 +64,7 @@ public class BankServiceImpl implements BankService  {
         String accountNumber = getAccountNumber();
 
 
-        Account account = new Account(accountNumber ,accountType , (double)0 , customeId) ;
+        Account account = new Account(accountNumber ,accountType , (double)0 , customerId) ;
         accountRepository.save(account); ;
 
         return  accountNumber;
@@ -88,8 +88,15 @@ public class BankServiceImpl implements BankService  {
 
         account.setBalance(Double.valueOf(account.getBalance() + amount)) ;  // balance updated .
 
-        Transanction transanction = new Transanction(account.getAccountNumber() , amount , UUID.randomUUID().toString() , note , LocalDateTime.now(), Type.DEPOSIT ) ;
-        transactionRepository.add(transaction)  ;
+        Transanction transanction = new Transanction(
+                UUID.randomUUID().toString(),   // id
+                Type.DEPOSIT,                   // type
+                account.getAccountNumber(),     // accountNumber
+                amount,                         // amount
+                LocalDateTime.now(),            // timestamp
+                note                            // note
+                );
+        transactionRepository.add(transanction)  ;
     }
 
     @Override
@@ -101,14 +108,21 @@ public class BankServiceImpl implements BankService  {
         Account account = accountRepository.findByNumber(accountNumber)
                 .orElseThrow(()-> new AccountNotFoundException("Account not found" + accountNumber)) ; //new thing .
 
-        if(account.getBalance().compareTo(amount) < 0 )
-            throw new InsufficientFundsException("Insufficient Balance") ;
+        if (account.getBalance() < amount)
+                 throw new InsufficientFundsException("Insufficient Balance");
 
 
         account.setBalance(Double.valueOf(account.getBalance() - amount)) ;  // balance updated .
 
-        Transanction transanction = new Transanction(account.getAccountNumber() , amount , UUID.randomUUID().toString() , note , LocalDateTime.now(), Type.WITHDRAW ) ;
-        transactionRepository.add(transaction)  ;
+            Transanction transanction = new Transanction(
+                UUID.randomUUID().toString(),   // id
+                Type.WITHDRAW,                // type
+                account.getAccountNumber(),     // accountNumber
+                amount,                         // amount
+                LocalDateTime.now(),            // timestamp
+                note                            // note
+                );
+        transactionRepository.add(transanction)  ;
 
 
     }
@@ -129,7 +143,7 @@ public class BankServiceImpl implements BankService  {
                 .orElseThrow(() -> new AccountNotFoundException("Account not found: " + toAcc));
 
         //check : from mei sufficient bal h ya nhi .
-        if (from.getBalance().compareTo(amount) < 0)
+        if (from.getBalance() < amount)
             throw new InsufficientFundsException("Insufficient Balance");
 
 
@@ -137,13 +151,23 @@ public class BankServiceImpl implements BankService  {
         from.setBalance(from.getBalance() - amount); // from acc : bal deduct
         to.setBalance(to.getBalance() + amount);     // to m : bal add .
 
-        transactionRepository.add(new Transaction(from.getAccountNumber(),
-                amount, UUID.randomUUID().toString(), note,
-                LocalDateTime.now(), Type.TRANSFER_OUT));
+        transactionRepository.add(new Transanction( 
+                UUID.randomUUID().toString(),
+                Type.TRANSFER_OUT,
+                from.getAccountNumber(),
+                amount,
+                LocalDateTime.now(),
+                note
+        ));
 
-        transactionRepository.add(new Transaction(to.getAccountNumber(),
-                amount, UUID.randomUUID().toString(), note,
-                LocalDateTime.now(), Type.TRANSFER_IN));
+        transactionRepository.add(new Transanction( 
+                UUID.randomUUID().toString(),
+                Type.TRANSFER_OUT,
+                to.getAccountNumber(),  // difference in the transaction .
+                amount,
+                LocalDateTime.now(),
+                note
+            ));
     }
 
     @Override
@@ -161,8 +185,9 @@ public class BankServiceImpl implements BankService  {
         String query = (q == null) ? "" : q.toLowerCase() ;
         List<Account> result = new ArrayList<>() ;
 
-        for(Customer c : customerRepository.findAll()){
-            if(c.getName().toLowerCase().contains(q))
+        for(Customer c : customerRepository.findAll())
+        {
+            if(c.getName().toLowerCase().contains(query))
                 result.addAll(accountRepository.findByCustomerId(c.getId()) ) ;
         }
     result.sort(Comparator.comparing(Account::getAccountNumber)) ;

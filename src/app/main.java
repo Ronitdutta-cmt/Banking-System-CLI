@@ -28,8 +28,8 @@ public class main {
         // passing scanner object into it.
             switch (choice) {
                 case "1" -> openAccount(sc, bankService);
-                case "2" -> deposit(sc );
-                case "3" -> withdraw(sc);
+                case "2" -> deposit(sc, bankService );
+                case "3" -> withdraw(sc , bankService);
                 case "4" -> transfer(sc, bankService);
                 case "5" -> statement(sc ,bankService);
                 case "6" -> listAccounts(sc , bankService);
@@ -57,30 +57,30 @@ public class main {
             if (amountStr.isBlank()) amountStr = "0";
             Double initial = Double.valueOf(amountStr); //type conversion into double .
 
-            String accountNumber = BankService.openAccount(name, email , type)  ; // err : non static
+            String accountNumber = bankService.openAccount(name, email, type);// err : non static
             if(initial > 0){
                 bankService.deposit(accountNumber , initial ,  "initial deposit") ;  // err : not made yet .
             }
             System.out.println("Account Opend" + accountNumber );
         }
 
-        public static void deposit(Scanner sc){
+        public static void deposit(Scanner sc , BankService bankService ){
             System.out.println("Account number: ");
             String accountNumber = sc.nextLine().trim();
             System.out.println("Amount: ");
             Double amount = Double.valueOf(sc.nextLine().trim());
 
-            BankService.deposit(accountNumber, amount, "Deposit");
+            bankService.deposit(accountNumber, amount, "Deposit");
             System.out.println("Deposited");
         }
 
-        public static void withdraw(Scanner sc){
+        public static void withdraw(Scanner sc ,  BankService bankService){
             System.out.println("Account number: ");
             String accountNumber = sc.nextLine().trim();
             System.out.println("Amount: ");
             Double amount = Double.valueOf(sc.nextLine().trim());
 
-            BankService.Withdraw(accountNumber, amount, "Withdrawl");
+            bankService.Withdraw(accountNumber, amount, "Withdrawal");
             System.out.println("Withdrawn");
             // till here same as deposit .
 
@@ -97,13 +97,13 @@ public class main {
 
             Double amount = Double.valueOf(sc.nextLine().trim());
 
-            BankService.transfer(from,to,  amount, "Transfer");
+            bankService.transfer(from, to, amount, "Transfer");
         }
 
 
         public static void statement(Scanner sc , BankService bankService){
             System.out.println("Account number: ");
-            String account = scanner.nextLine().trim();
+            String account = sc.nextLine().trim();
 
             bankService.getStatement(account).forEach(t -> {
                 System.out.println(t.getTimestamp() + " | " + t.getType() + " | " + t.getAmount() + " | " + t.getNote());

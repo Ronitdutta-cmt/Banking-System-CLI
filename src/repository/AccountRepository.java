@@ -17,7 +17,7 @@ public class AccountRepository {
 
     // return account krega pr , wraped in optional (coz it can be null) .
     public Optional<Account> findByNumber(String accountNumber) {
-        return  Optinal.ofNullable(accountsByNumber.get(accountNumber)) ; //didn't use normal "of" -> coz this will handle null too .
+        return  Optional.ofNullable(accountsByNumber.get(accountNumber)) ; //didn't use normal "of" -> coz this will handle null too .
     }
 
     public List<Account> findByCustomerId(String customerId ) {
