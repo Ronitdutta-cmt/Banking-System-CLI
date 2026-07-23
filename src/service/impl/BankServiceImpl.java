@@ -57,14 +57,14 @@ public class BankServiceImpl implements BankService  {
         String customerId = UUID.randomUUID().toString() ;
 
         //create customer
-        Customer c = new Customer(email,  customerId ,name) ;
+        Customer c = new Customer(customerId, name, email);
         customerRepository.save(c) ;
-
 
         String accountNumber = getAccountNumber();
 
 
-        Account account = new Account(accountNumber ,accountType , (double)0 , customerId) ;
+        Account account = new Account(accountNumber, customerId, 0.0, accountType);
+
         accountRepository.save(account); ;
 
         return  accountNumber;
@@ -162,7 +162,7 @@ public class BankServiceImpl implements BankService  {
 
         transactionRepository.add(new Transanction( 
                 UUID.randomUUID().toString(),
-                Type.TRANSFER_OUT,
+                Type.TRANSFER_IN,
                 to.getAccountNumber(),  // difference in the transaction .
                 amount,
                 LocalDateTime.now(),
@@ -202,6 +202,10 @@ public class BankServiceImpl implements BankService  {
         return String.format("AC%06d",size ) ; // "AC" k badd 6 digits honge .
     }
 
-
+    @Override  // -->  temporary disable to check . 
+    public Customer getCustomerById(String id) {
+             return customerRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Customer not found"));
+    }
 
 }

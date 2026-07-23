@@ -1,26 +1,25 @@
 package service;
 
 import domain.Account;
+import domain.Customer;
 import domain.Transanction;
-
 import java.util.List;
-import java.util.Map;
 
 public interface BankService {
 
+    String openAccount(String name, String email, String accountType);
 
+    List<Account> listAccounts();
 
+    void deposit(String accountNumber, Double amount, String note);
 
-    String openAccount(String name, String email, String accountType) ;
-    List<Account> listAccounts() ;
+    void Withdraw(String accountNumber, Double amount, String note);
 
-    void deposit(String accountNumber, Double amount, String deposit) ;
-    void Withdraw(String accountNumber, Double amount, String withdrawl) ;
-    void transfer(String from, String to, Double amount, String transfer);
+    void transfer(String fromAcc, String toAcc, Double amount, String note);
 
-    List<Transanction> getStatement(String account) ;
+    List<Transanction> getStatement(String account);
 
+    List<Account> searchAccountsByCustomerName(String query);
 
-    List<Account> searchAccountsByCustomerName(String q);
-
+    Customer getCustomerById(String id);
 }

@@ -1,6 +1,7 @@
 package app;
 import service.BankService;
 import service.impl.BankServiceImpl;
+import domain.Customer;
 
 import java.util.* ;
 public class main {
@@ -23,7 +24,7 @@ public class main {
                     """);
             System.out.print("CHOOSE: ");
             String choice = sc.nextLine().trim();
-            System.out.println("CHOICE: " + choice);
+            System.out.println("YOUR CHOICE: " + choice);
 
         // passing scanner object into it.
             switch (choice) {
@@ -112,12 +113,21 @@ public class main {
         }
 
 
-        public static void listAccounts(Scanner sc , BankService bankService ){
-            bankService.listAccounts().forEach(a->{
-                System.out.println(a.getAccountNumber()  + "|" + a.getAccountType() +"|" + a.getBalance() );
-            });
+        public static void listAccounts(Scanner sc, BankService bankService) {
 
+            bankService.listAccounts().forEach(a -> {
+
+                Customer customer = bankService.getCustomerById(a.getCustomerId());
+
+                System.out.println(
+                        a.getAccountNumber() + " | " +
+                        customer.getName() + " | " +
+                        a.getAccountType() + " | " +
+                        a.getBalance()
+                );
+         });
         }
+
         public static void searchAccounts(Scanner sc , BankService bankService){
             System.out.println("Customer name contains: ");
             String q = sc.nextLine().trim();
