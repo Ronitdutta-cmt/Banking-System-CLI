@@ -114,6 +114,8 @@ public class BankServiceImpl implements BankService  {
 
         account.setBalance(Double.valueOf(account.getBalance() - amount)) ;  // balance updated .
 
+        accountRepository.update(account); // mySQL update .
+
             Transanction transanction = new Transanction(
                 UUID.randomUUID().toString(),   // id
                 Type.WITHDRAW,                // type
@@ -151,6 +153,9 @@ public class BankServiceImpl implements BankService  {
         from.setBalance(from.getBalance() - amount); // from acc : bal deduct
         to.setBalance(to.getBalance() + amount);     // to m : bal add .
 
+        accountRepository.update(from); 
+        accountRepository.update(to);  // updates  mySQL .
+
         transactionRepository.add(new Transanction( 
                 UUID.randomUUID().toString(),
                 Type.TRANSFER_OUT,
@@ -160,6 +165,8 @@ public class BankServiceImpl implements BankService  {
                 note
         ));
 
+
+        
         transactionRepository.add(new Transanction( 
                 UUID.randomUUID().toString(),
                 Type.TRANSFER_IN,
