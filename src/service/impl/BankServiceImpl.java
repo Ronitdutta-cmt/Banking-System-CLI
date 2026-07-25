@@ -88,6 +88,8 @@ public class BankServiceImpl implements BankService  {
 
         account.setBalance(Double.valueOf(account.getBalance() + amount)) ;  // balance updated .
 
+        accountRepository.update(account); // updates account table . 
+
         Transanction transanction = new Transanction(
                 UUID.randomUUID().toString(),   // id
                 Type.DEPOSIT,                   // type

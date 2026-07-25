@@ -13,8 +13,7 @@ public class TransactionRepository {
     public void add(Transanction transaction) {
 
         String sql =
-                "INSERT INTO transactions(id, type, account_number, amount, timestamp, note) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        "INSERT INTO transactions(id, type, account_number, amount, transaction_time, note)VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -43,7 +42,7 @@ public class TransactionRepository {
         List<Transanction> transactions = new ArrayList<>();
 
         String sql =
-                "SELECT * FROM transactions WHERE account_number = ? ORDER BY timestamp";
+            "SELECT * FROM transactions WHERE account_number = ? ORDER BY transaction_time";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -60,7 +59,7 @@ public class TransactionRepository {
                                 Type.valueOf(rs.getString("type")),
                                 rs.getString("account_number"),
                                 rs.getDouble("amount"),
-                                rs.getTimestamp("timestamp").toLocalDateTime(),
+                                rs.getTimestamp("transaction_time").toLocalDateTime(),
                                 rs.getString("note")
                         )
                 );

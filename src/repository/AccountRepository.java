@@ -25,6 +25,8 @@ public class AccountRepository {
 
             ps.executeUpdate();
 
+            System.out.println("Account inserted into database!"); // temporary : for debugging . 
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
